@@ -19,15 +19,9 @@ I'm updating `concorR` to generate a method for making reduced networks that con
 - `make_reduced` in the `CONCOR_blockmodeling.R` file.
 
 
-``` r
+```{r}
 # install.packages("devtools")
 devtools::install_github("sfwolfphys/concorR")
-
-## Load the package
-library(concorR)
-
-## Update to local versions of the important functions:
-source('./R/CONCOR_blockmodeling.R')
 ```
 
 ## Example
@@ -35,7 +29,11 @@ source('./R/CONCOR_blockmodeling.R')
 This is a basic example which shows a common task: using CONCOR to partition a single adjacency matrix.
 
 ```{r example}
+## Load the package
 library(concorR)
+
+## Update to local versions of the important functions:
+source('./R/CONCOR_blockmodeling.R')
 a <- matrix(c(0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 
                1, 0, 1, 0, 1, 1, 0, 0, 0, 0), ncol = 5)
 rownames(a) <- letters[1:5]

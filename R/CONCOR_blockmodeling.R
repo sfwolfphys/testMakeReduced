@@ -13,32 +13,40 @@ make_blk <- function(adj_list, nsplit = 1) {
 }
 
 .edge_dens <- function(adj_mat) {
+  ## Make weighted matrix unweighted
   adj_mat[adj_mat > 0] <- 1
-  a <- sum(adj_mat)
-  m <- length(adj_mat) - sqrt(length(adj_mat))
-  d <- a / m
+
+  a <- sum(adj_mat)   # Count total edges in network
+  m <- length(adj_mat) - sqrt(length(adj_mat))  ## Count possible edges (remove the diagonal)
+  d <- a / m  # actual/possible
   return(d)
 }
 
 #' @export
-make_reduced <- function(adj_list, nsplit = 1) {
-  blk_out = make_blk(adj_list, nsplit)
-  dens_vec <- sapply(adj_list, function(x) .edge_dens(x))
-  d <- lapply(blk_out, function(x) x[[5]])
-  mat_return <- vector("list", length = length(dens_vec))
+make_reduced <- function(adj_list, nsplit = 1, connect='density') {
+  if(connect=='density'){  
+    blk_out = make_blk(adj_list, nsplit)
+    dens_vec <- sapply(adj_list, function(x) .edge_dens(x))
+    d <- lapply(blk_out, function(x) x[[5]])
+    mat_return <- vector("list", length = length(dens_vec))
 
-  for (i in 1:length(dens_vec)) {
-    temp1 <- d[[i]]
-    temp1[is.nan(temp1)] <- 0
-    temp1[temp1 < dens_vec[[i]]] <- 0
-    temp1[temp1 > 0] <- 1
-    mat_return[[i]] <- temp1
+    for (i in 1:length(dens_vec)) {
+      temp1 <- d[[i]]
+      temp1[is.nan(temp1)] <- 0
+      temp1[temp1 < dens_vec[[i]]] <- 0
+      temp1[temp1 > 0] <- 1
+      mat_return[[i]] <- temp1
+    }
+  
+    return_list <- list()
+    return_list$reduced_mat <- mat_return
+    return_list$dens <- dens_vec
+    return(return_list)
+  }else if(connect=='degree'){
+    
+  }else{
+    stop('connect must be density or degree.')
   }
-
-  return_list <- list()
-  return_list$reduced_mat <- mat_return
-  return_list$dens <- dens_vec
-  return(return_list)
 }
 
 #' @export
