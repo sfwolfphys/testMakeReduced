@@ -1,5 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit README.Rmd -->
 
 ## Update to `concorR`
 
@@ -101,13 +101,44 @@ plot_reduced(r_igraph)
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
-### Additional parameters for making the reduced network
+### Connection criteria for making the reduced network
 
 In the prior example, the reduced network was created using an edge
 density threshold. For some applications, it may be preferred to use a
 degree-based measure instead. Therefore if the average degree from block
 a to block b is greater than the average outdegree of the network, we
-will draw the edge in.
+will draw the edge in. To be more explicit, if
+![M](https://latex.codecogs.com/png.latex?M "M") is the adjacency
+matrix, define:
+
+  
+![&#10;X = M\[(\\text{elements in block i}), (\\text{elements in block
+j})\]&#10;](https://latex.codecogs.com/png.latex?%0AX%20%3D%20M%5B%28%5Ctext%7Belements%20in%20block%20i%7D%29%2C%20%28%5Ctext%7Belements%20in%20block%20j%7D%29%5D%0A
+"
+X = M[(\\text{elements in block i}), (\\text{elements in block j})]
+")  
+
+an edge is drawn when:
+
+  
+![&#10;\\langle\\texttt{degree}(X)\\rangle =
+\\frac{\\texttt{sum}(X)}{\\texttt{nrow}(X)} \>
+\\frac{\\texttt{sum}(M)}{\\texttt{nrow}(M)} =
+\\langle\\texttt{degree}(M)\\rangle&#10;](https://latex.codecogs.com/png.latex?%0A%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%20%3D%20%5Cfrac%7B%5Ctexttt%7Bsum%7D%28X%29%7D%7B%5Ctexttt%7Bnrow%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Ctexttt%7Bsum%7D%28M%29%7D%7B%5Ctexttt%7Bnrow%7D%28M%29%7D%20%3D%20%5Clangle%5Ctexttt%7Bdegree%7D%28M%29%5Crangle%0A
+"
+\\langle\\texttt{degree}(X)\\rangle = \\frac{\\texttt{sum}(X)}{\\texttt{nrow}(X)} \> \\frac{\\texttt{sum}(M)}{\\texttt{nrow}(M)} = \\langle\\texttt{degree}(M)\\rangle
+")  
+Note that for this definition,
+![i](https://latex.codecogs.com/png.latex?i "i") and
+![j](https://latex.codecogs.com/png.latex?j "j") need not be exclusive.
+Another definition of the average outdegree is:
+![\\langle\\texttt{degree}(X)\\rangle =
+\\texttt{mean}(\\texttt{rowSums}(X))](https://latex.codecogs.com/png.latex?%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%20%3D%20%5Ctexttt%7Bmean%7D%28%5Ctexttt%7BrowSums%7D%28X%29%29
+"\\langle\\texttt{degree}(X)\\rangle = \\texttt{mean}(\\texttt{rowSums}(X))").
+
+To use this criteria, we have created an argument `connect`. The default
+to this argument is `'density'`, which does the analysis in the previous
+section. To use this criterion instead, use the option `'degree'`.
 
 ``` r
 (r_mat_deg <- make_reduced(list(a), nsplit = 1, connect = 'degree'))
@@ -249,6 +280,8 @@ plot_reduced(gred2d)
 par(mfrow = c(1,1))
 ```
 
+(YAWN\!)
+
 with the multi-relation version:
 
 ``` r
@@ -264,6 +297,83 @@ plot_reduced(gbothd[[2]])
 ``` r
 par(mfrow = c(1,1))
 ```
+
+(Double YAWN\!)
+
+### IDEAS to update degree criteria
+
+Comparing the average degree of the reduced network to the whole network
+has scaling problems. At the very least, it highlights when large blocks
+are strongly connected to other large blocks. To think about how we
+might adjust this, I asked the question, “How does average degree in a
+uniform network depend on network size?”
+
+``` r
+netSizes = round(10^(seq(1,3,0.5)),0)
+probs = seq(0.1,1,0.2)
+aDeg = function(size, p){
+    N = 1000
+    deg = numeric(N)
+    for(i in 1:N){
+        g = erdos.renyi.game(n=size, p = p, directed = TRUE)
+        deg[i] = mean(degree(g, mode = 'out'))
+    }
+    aDeg = mean(deg)
+    return(aDeg)
+}
+
+library(viridis)
+#> Loading required package: viridisLite
+pcols = viridis(length(probs))
+plot(netSizes,netSizes,type='n',xlab = 'Network Size', ylab = 'average degree',log='xy',
+     xlim=c(10,1000),ylim=c(0.1,1000))
+if(!file.exists('avgDegree.RData')){
+    avgDegree = matrix(nrow = length(netSizes), ncol = length(probs))
+    for(i in 1:length(probs)){
+        p = probs[i]
+        aDegree = mapply(aDeg,netSizes,p)
+        avgDegree[ ,i] = aDegree
+        points(netSizes,aDegree,col=pcols[i],pch=i)
+        abline(b=probs[i],a=0,col=pcols[i],lty=i, untf = TRUE)
+    }
+    save(avgDegree,file='avgDegree.RData')
+}else{
+    load('avgDegree.RData')
+    for(i in 1:length(probs)){
+        aDegree = avgDegree[ ,i] 
+        points(netSizes,aDegree,col=pcols[i],pch=i)
+        abline(b=probs[i],a=0,col=pcols[i],lty=i, untf = TRUE)
+    }
+}
+legend('topleft',legend = paste("p =",probs),col=pcols,pch=1:length(probs),
+       lty=1:length(probs))
+```
+
+<img src="man/figures/README-average-degree-scaling-1.png" width="100%" />
+
+So, for uniform networks anyway, average degree scales with network size
+(and the scaling factor is the probability for a tie to form). As a
+zeroth order approximation it would seem that we should scale the
+condition by relative network sizes. I propose two ideas that I will
+expand on when we meet.
+
+#### IDEA 1:
+
+  
+![&#10;\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{nrow}(X)} \>
+\\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{nrow}(M)}&#10;](https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%7D%7B%5Ctexttt%7Bnrow%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28M%29%5Crangle%7D%7B%5Ctexttt%7Bnrow%7D%28M%29%7D%0A
+"
+\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{nrow}(X)} \> \\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{nrow}(M)}
+")  
+
+#### IDEA 2:
+
+  
+![&#10;\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{ncol}(X)} \>
+\\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{ncol}(M)}&#10;](https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%7D%7B%5Ctexttt%7Bncol%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28M%29%5Crangle%7D%7B%5Ctexttt%7Bncol%7D%28M%29%7D%0A
+"
+\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{ncol}(X)} \> \\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{ncol}(M)}
+")  
 
 ## Acknowledgments
 
