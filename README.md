@@ -121,20 +121,21 @@ X = M[(\\text{elements in block i}), (\\text{elements in block j})]
 an edge is drawn when:
 
   
-![&#10;\\langle\\texttt{degree}(X)\\rangle =
+![&#10;\\texttt{mean}(\\texttt{degree}(X)) =
 \\frac{\\texttt{sum}(X)}{\\texttt{nrow}(X)} \>
 \\frac{\\texttt{sum}(M)}{\\texttt{nrow}(M)} =
-\\langle\\texttt{degree}(M)\\rangle&#10;](https://latex.codecogs.com/png.latex?%0A%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%20%3D%20%5Cfrac%7B%5Ctexttt%7Bsum%7D%28X%29%7D%7B%5Ctexttt%7Bnrow%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Ctexttt%7Bsum%7D%28M%29%7D%7B%5Ctexttt%7Bnrow%7D%28M%29%7D%20%3D%20%5Clangle%5Ctexttt%7Bdegree%7D%28M%29%5Crangle%0A
+\\texttt{mean}(\\texttt{degree}(M))&#10;](https://latex.codecogs.com/png.latex?%0A%5Ctexttt%7Bmean%7D%28%5Ctexttt%7Bdegree%7D%28X%29%29%20%3D%20%5Cfrac%7B%5Ctexttt%7Bsum%7D%28X%29%7D%7B%5Ctexttt%7Bnrow%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Ctexttt%7Bsum%7D%28M%29%7D%7B%5Ctexttt%7Bnrow%7D%28M%29%7D%20%3D%20%5Ctexttt%7Bmean%7D%28%5Ctexttt%7Bdegree%7D%28M%29%29%0A
 "
-\\langle\\texttt{degree}(X)\\rangle = \\frac{\\texttt{sum}(X)}{\\texttt{nrow}(X)} \> \\frac{\\texttt{sum}(M)}{\\texttt{nrow}(M)} = \\langle\\texttt{degree}(M)\\rangle
+\\texttt{mean}(\\texttt{degree}(X)) = \\frac{\\texttt{sum}(X)}{\\texttt{nrow}(X)} \> \\frac{\\texttt{sum}(M)}{\\texttt{nrow}(M)} = \\texttt{mean}(\\texttt{degree}(M))
 ")  
 Note that for this definition,
 ![i](https://latex.codecogs.com/png.latex?i "i") and
 ![j](https://latex.codecogs.com/png.latex?j "j") need not be exclusive.
-Another definition of the average outdegree is:
-![\\langle\\texttt{degree}(X)\\rangle =
-\\texttt{mean}(\\texttt{rowSums}(X))](https://latex.codecogs.com/png.latex?%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%20%3D%20%5Ctexttt%7Bmean%7D%28%5Ctexttt%7BrowSums%7D%28X%29%29
-"\\langle\\texttt{degree}(X)\\rangle = \\texttt{mean}(\\texttt{rowSums}(X))").
+Another definition of the average outdegree is:   
+![\\texttt{mean}(\\texttt{degree}(X)) =
+\\texttt{mean}(\\texttt{rowSums}(X))](https://latex.codecogs.com/png.latex?%5Ctexttt%7Bmean%7D%28%5Ctexttt%7Bdegree%7D%28X%29%29%20%3D%20%5Ctexttt%7Bmean%7D%28%5Ctexttt%7BrowSums%7D%28X%29%29
+"\\texttt{mean}(\\texttt{degree}(X)) = \\texttt{mean}(\\texttt{rowSums}(X))")  
+.
 
 To use this criteria, we have created an argument `connect`. The default
 to this argument is `'density'`, which does the analysis in the previous
@@ -360,19 +361,19 @@ expand on when we meet.
 #### IDEA 1:
 
   
-![&#10;\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{nrow}(X)} \>
-\\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{nrow}(M)}&#10;](https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%7D%7B%5Ctexttt%7Bnrow%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28M%29%5Crangle%7D%7B%5Ctexttt%7Bnrow%7D%28M%29%7D%0A
+![&#10;\\frac{\\texttt{mean}(\\texttt{degree}(X))}{\\texttt{nrow}(X)} \>
+\\frac{\\texttt{mean}(\\texttt{degree}(M))}{\\texttt{nrow}(M)}&#10;](https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Ctexttt%7Bmean%7D%28%5Ctexttt%7Bdegree%7D%28X%29%29%7D%7B%5Ctexttt%7Bnrow%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Ctexttt%7Bmean%7D%28%5Ctexttt%7Bdegree%7D%28M%29%29%7D%7B%5Ctexttt%7Bnrow%7D%28M%29%7D%0A
 "
-\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{nrow}(X)} \> \\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{nrow}(M)}
+\\frac{\\texttt{mean}(\\texttt{degree}(X))}{\\texttt{nrow}(X)} \> \\frac{\\texttt{mean}(\\texttt{degree}(M))}{\\texttt{nrow}(M)}
 ")  
 
 #### IDEA 2:
 
   
-![&#10;\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{ncol}(X)} \>
-\\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{ncol}(M)}&#10;](https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28X%29%5Crangle%7D%7B%5Ctexttt%7Bncol%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Clangle%5Ctexttt%7Bdegree%7D%28M%29%5Crangle%7D%7B%5Ctexttt%7Bncol%7D%28M%29%7D%0A
+![&#10;\\frac{\\texttt{mean}(\\texttt{degree}(X))}{\\texttt{ncol}(X)} \>
+\\frac{\\texttt{mean}(\\texttt{degree}(M))}{\\texttt{ncol}(M)}&#10;](https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Ctexttt%7Bmean%7D%28%5Ctexttt%7Bdegree%7D%28X%29%29%7D%7B%5Ctexttt%7Bncol%7D%28X%29%7D%20%3E%20%5Cfrac%7B%5Ctexttt%7Bmean%7D%28%5Ctexttt%7Bdegree%7D%28M%29%29%7D%7B%5Ctexttt%7Bncol%7D%28M%29%7D%0A
 "
-\\frac{\\langle\\texttt{degree}(X)\\rangle}{\\texttt{ncol}(X)} \> \\frac{\\langle\\texttt{degree}(M)\\rangle}{\\texttt{ncol}(M)}
+\\frac{\\texttt{mean}(\\texttt{degree}(X))}{\\texttt{ncol}(X)} \> \\frac{\\texttt{mean}(\\texttt{degree}(M))}{\\texttt{ncol}(M)}
 ")  
 
 ## Acknowledgments

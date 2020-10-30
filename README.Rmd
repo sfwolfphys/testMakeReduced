@@ -82,9 +82,9 @@ $$
 an edge is drawn when:
 
 $$
-\langle\texttt{degree}(X)\rangle = \frac{\texttt{sum}(X)}{\texttt{nrow}(X)} > \frac{\texttt{sum}(M)}{\texttt{nrow}(M)} = \langle\texttt{degree}(M)\rangle
+\texttt{mean}(\texttt{degree}(X)) = \frac{\texttt{sum}(X)}{\texttt{nrow}(X)} > \frac{\texttt{sum}(M)}{\texttt{nrow}(M)} = \texttt{mean}(\texttt{degree}(M))
 $$
-Note that for this definition, $i$ and $j$ need not be exclusive.  Another definition of the average outdegree is: $\langle\texttt{degree}(X)\rangle = \texttt{mean}(\texttt{rowSums}(X))$.
+Note that for this definition, $i$ and $j$ need not be exclusive.  Another definition of the average outdegree is: $$\texttt{mean}(\texttt{degree}(X)) = \texttt{mean}(\texttt{rowSums}(X))$$.
 
 To use this criteria, we have created an argument `connect`.  The default to this argument is `'density'`, which does the analysis in the previous section.  To use this criterion instead, use the option `'degree'`.
 
@@ -239,13 +239,13 @@ So, for uniform networks anyway, average degree scales with network size (and th
 #### IDEA 1:
 
 $$
-\frac{\langle\texttt{degree}(X)\rangle}{\texttt{nrow}(X)} > \frac{\langle\texttt{degree}(M)\rangle}{\texttt{nrow}(M)}
+\frac{\texttt{mean}(\texttt{degree}(X))}{\texttt{nrow}(X)} > \frac{\texttt{mean}(\texttt{degree}(M))}{\texttt{nrow}(M)}
 $$
 
 #### IDEA 2:
 
 $$
-\frac{\langle\texttt{degree}(X)\rangle}{\texttt{ncol}(X)} > \frac{\langle\texttt{degree}(M)\rangle}{\texttt{ncol}(M)}
+\frac{\texttt{mean}(\texttt{degree}(X))}{\texttt{ncol}(X)} > \frac{\texttt{mean}(\texttt{degree}(M))}{\texttt{ncol}(M)}
 $$
 
 ## Acknowledgments
