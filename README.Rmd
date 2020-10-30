@@ -15,11 +15,12 @@ knitr::opts_chunk$set(
 
 ## Update to `concorR`
 I'm updating `concorR` to generate a method for making reduced networks that connects blocks based on _degree_ rather than just _density_.  Functions that are being updated are:
+
 - `make_blk` in the `CONCOR_blockmodeling.R` file.
 - `make_reduced` in the `CONCOR_blockmodeling.R` file.
 
 
-```{r}
+``` r
 # install.packages("devtools")
 devtools::install_github("sfwolfphys/concorR")
 ```
@@ -34,6 +35,8 @@ library(concorR)
 
 ## Update to local versions of the important functions:
 source('./R/CONCOR_blockmodeling.R')
+
+## Simple Example
 a <- matrix(c(0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 
                1, 0, 1, 0, 1, 1, 0, 0, 0, 0), ncol = 5)
 rownames(a) <- letters[1:5]
@@ -64,6 +67,17 @@ The *reduced matrix* represents each position as a node, and calculates links by
 r_igraph <- make_reduced_igraph(r_mat$reduced_mat[[1]])
 
 plot_reduced(r_igraph)
+```
+
+### Additional parameters for making the reduced network
+
+In the prior example, the reduced network was created using an edge density threshold.  For some applications, it may be preferred to use a degree-based measure instead.  Therefore if the average degree from block a to block b is greater than the average outdegree of the network, we will draw the edge in.
+
+```{r}
+(r_mat_deg <- make_reduced(list(a), nsplit = 1, connect = 'degree'))
+r_deg_igraph <- make_reduced_igraph(r_mat_deg$reduced_mat[[1]])
+
+plot_reduced(r_deg_igraph)
 ```
 
 ## Example 2: Krackhardt high-tech managers
@@ -131,6 +145,30 @@ gboth <- lapply(redboth$reduced_mat, make_reduced_igraph)
 par(mfrow = c(1, 2))
 plot_reduced(gboth[[1]])
 plot_reduced(gboth[[2]])
+par(mfrow = c(1,1))
+```
+
+### Reduced networks using degree criterion
+```{r krackhardt-reduced-single-degree}
+red1d <- make_reduced(list(m1), nsplit = 2, connect='degree')
+red2d <- make_reduced(list(m2), nsplit = 2, connect='degree')
+
+gred1d <- make_reduced_igraph(red1d$reduced_mat[[1]])
+gred2d <- make_reduced_igraph(red2d$reduced_mat[[1]])
+
+par(mfrow = c(1, 2))
+plot_reduced(gred1d)
+plot_reduced(gred2d)
+par(mfrow = c(1,1))
+```
+
+with the multi-relation version:
+```{r krackhardt-reduced-multi-degree}
+redbothd <- make_reduced(list(m1, m2), nsplit = 2, connect='degree')
+gbothd <- lapply(redbothd$reduced_mat, make_reduced_igraph)
+par(mfrow = c(1, 2))
+plot_reduced(gbothd[[1]])
+plot_reduced(gbothd[[2]])
 par(mfrow = c(1,1))
 ```
 

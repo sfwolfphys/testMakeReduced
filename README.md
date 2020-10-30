@@ -5,19 +5,16 @@
 
 I’m updating `concorR` to generate a method for making reduced networks
 that connects blocks based on *degree* rather than just *density*.
-Functions that are being updated are: - `make_blk` in the
-`CONCOR_blockmodeling.R` file. - `make_reduced` in the
-`CONCOR_blockmodeling.R` file.
+Functions that are being updated are:
+
+  - `make_blk` in the `CONCOR_blockmodeling.R` file.
+  - `make_reduced` in the `CONCOR_blockmodeling.R` file.
+
+<!-- end list -->
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("sfwolfphys/concorR")
-
-## Load the package
-library(concorR)
-
-## Update to local versions of the important functions:
-source('./R/CONCOR_blockmodeling.R')
 ```
 
 ## Example
@@ -26,7 +23,13 @@ This is a basic example which shows a common task: using CONCOR to
 partition a single adjacency matrix.
 
 ``` r
+## Load the package
 library(concorR)
+
+## Update to local versions of the important functions:
+source('./R/CONCOR_blockmodeling.R')
+
+## Simple Example
 a <- matrix(c(0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 
                1, 0, 1, 0, 1, 1, 0, 0, 0, 0), ncol = 5)
 rownames(a) <- letters[1:5]
@@ -97,6 +100,32 @@ plot_reduced(r_igraph)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+### Additional parameters for making the reduced network
+
+In the prior example, the reduced network was created using an edge
+density threshold. For some applications, it may be preferred to use a
+degree-based measure instead. Therefore if the average degree from block
+a to block b is greater than the average outdegree of the network, we
+will draw the edge in.
+
+``` r
+(r_mat_deg <- make_reduced(list(a), nsplit = 1, connect = 'degree'))
+#> $reduced_mat
+#> $reduced_mat[[1]]
+#>         Block 1 Block 2
+#> Block 1       0       0
+#> Block 2       1       0
+#> 
+#> 
+#> $deg
+#> [1] 2.4
+r_deg_igraph <- make_reduced_igraph(r_mat_deg$reduced_mat[[1]])
+
+plot_reduced(r_deg_igraph)
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ## Example 2: Krackhardt high-tech managers
 
@@ -195,6 +224,42 @@ plot_reduced(gboth[[2]])
 ```
 
 <img src="man/figures/README-krackhardt-reduced-multi-1.png" width="100%" />
+
+``` r
+par(mfrow = c(1,1))
+```
+
+### Reduced networks using degree criterion
+
+``` r
+red1d <- make_reduced(list(m1), nsplit = 2, connect='degree')
+red2d <- make_reduced(list(m2), nsplit = 2, connect='degree')
+
+gred1d <- make_reduced_igraph(red1d$reduced_mat[[1]])
+gred2d <- make_reduced_igraph(red2d$reduced_mat[[1]])
+
+par(mfrow = c(1, 2))
+plot_reduced(gred1d)
+plot_reduced(gred2d)
+```
+
+<img src="man/figures/README-krackhardt-reduced-single-degree-1.png" width="100%" />
+
+``` r
+par(mfrow = c(1,1))
+```
+
+with the multi-relation version:
+
+``` r
+redbothd <- make_reduced(list(m1, m2), nsplit = 2, connect='degree')
+gbothd <- lapply(redbothd$reduced_mat, make_reduced_igraph)
+par(mfrow = c(1, 2))
+plot_reduced(gbothd[[1]])
+plot_reduced(gbothd[[2]])
+```
+
+<img src="man/figures/README-krackhardt-reduced-multi-degree-1.png" width="100%" />
 
 ``` r
 par(mfrow = c(1,1))

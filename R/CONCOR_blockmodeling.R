@@ -22,6 +22,14 @@ make_blk <- function(adj_list, nsplit = 1) {
   return(d)
 }
 
+.outdeg = function(adj_mat){
+  ## Make weighted matrix unweighted
+  adj_mat[adj_mat > 0] <- 1
+  
+  outdeg = sum(adj_mat)/nrow(adj_mat)
+  return(outdeg)
+}
+
 #' @export
 make_reduced <- function(adj_list, nsplit = 1, connect='density') {
   if(connect=='density'){  
@@ -43,7 +51,42 @@ make_reduced <- function(adj_list, nsplit = 1, connect='density') {
     return_list$dens <- dens_vec
     return(return_list)
   }else if(connect=='degree'){
+    blk_out = make_blk(adj_list, nsplit)
+    outdegree = sapply(adj_list, function(x) .outdeg(x))
+    mat_return <- vector("list", length = length(outdegree))
     
+    
+    blks = lapply(blk_out, function(x)x[[1]])
+    idx = lapply(blk_out, function(x)x[[2]])
+    blk_membership = mapply(function(x,y){x[y][y[y]]}, blks, idx, SIMPLIFY=FALSE)
+    nblks = lapply(blk_membership,max)
+    
+    for(i in 1:length(outdegree)){ # For each adjacency matrix
+      this_adj_mat = adj_list[[i]]
+      nb = nblks[[i]]
+      members = blk_membership[[i]]
+      reduced_degree = matrix(0, nrow = nb, ncol = nb)
+      rownames(reduced_degree) = paste("Block",1:nb)
+      colnames(reduced_degree) = paste("Block",1:nb)
+      for(j in 1:nb){
+        for(k in 1:nb){
+          blk_adj_mat = this_adj_mat[j==members, k==members]
+          outDeg = .outdeg(blk_adj_mat)
+          reduced_degree[j,k] = outDeg
+        }
+      }
+      temp1 <- reduced_degree
+      temp1[is.nan(temp1)] <- 0
+      temp1[temp1 < outdegree[[i]]] <- 0
+      temp1[temp1 > 0] <- 1
+#      diag(temp1) = ifelse(diag(reduced_degree)>0,1)
+      mat_return[[i]] <- temp1
+    }
+                                                                
+    return_list <- list()
+    return_list$reduced_mat <- mat_return
+    return_list$deg <- outdegree
+    return(return_list)
   }else{
     stop('connect must be density or degree.')
   }
